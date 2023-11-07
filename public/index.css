@@ -20,3 +20,6 @@ tbody tr:nth-child(odd) {
 tbody tr:nth-child(even) {
   background-color: white;
 }
+.grayed {
+    background: #dedede;
+}

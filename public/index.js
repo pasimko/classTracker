@@ -36,6 +36,8 @@ const majorSelect = document.getElementById("majorSelect");
 const goButton = document.getElementById("goButton");
 const visualizeDiv = document.getElementById("visualize");
 
+let all_cells_toggled_on = false;
+
 // Ensure form is reset on refresh
 majorSelect.selectedIndex = 0;
 goButton.disabled = true;
@@ -96,7 +98,6 @@ async function requestData(major) {
         }
 
         let result = await response.json();
-        console.log('Received data:', result);
         return result
     } catch (error) {
         console.error('Error:', error.message);
@@ -105,30 +106,25 @@ async function requestData(major) {
 
 goButton.addEventListener('click', async () => {
     classData = await requestData({selectedMajor, selectedOption})
-    console.log(classData)
     if (!classData || classData == undefined) {
         visualizeDiv.innerHTML = "! sorry, we don't have that data formatted yet."
         return
     }
     visualizeDiv.innerHTML = "";
     // Create the table element
-
-    // Create the table element
     const courseTable = createTable(classData)
     // Append the table to the visualizeDiv
     visualizeDiv.appendChild(courseTable);
+    // Add toggle button
+    const toggle_button = document.createElement('button');
+    toggle_button.onclick = () => toggleClass();
+    toggle_button.innerText = "Toggle class taken status";
+    visualizeDiv.appendChild(toggle_button);
+    const toggle_info = document.createElement('p');
+    toggle_info.innerText = "! Click this button to toggle all cells into on/off state"
+    visualizeDiv.appendChild(toggle_info);
 })
 
-function createTableFromArrayOfObjectsWHEEEE(data) {
-    const table = document.createElement('table');
-    for (const obj of data) {
-        columnForThisObject = document.createElement('th');
-        columnForThisObject.text = obj.type;
-        table.appendChild(columnForThisObject);
-    }
-    return table;
-}
-//
 // Function to create an HTML table row for a list of items
 function createTableRow(header, columns) {
     const label = document.createElement('tr');
@@ -137,7 +133,11 @@ function createTableRow(header, columns) {
     label.appendChild(labelCell);
     for (const item of columns) {
         const cell = document.createElement('td');
+        cell.onclick = function() {
+            this.className = this.className == "grayed" ? "normal" : "grayed";
+        }
         cell.textContent = item;
+        cell.class = "normal";
         label.appendChild(cell);
     }
     return label;
@@ -159,4 +159,14 @@ function createTable(data) {
     }
 
     return table;
+}
+
+function toggleClass() {
+    var tdElements = document.querySelectorAll('td');
+    let newClass = all_cells_toggled_on ? "normal" : "grayed";
+    for (var i = 0; i < tdElements.length; i++) {
+        var td = tdElements[i];
+        td.className = newClass;
+    }
+    all_cells_toggled_on = !all_cells_toggled_on;
 }
