@@ -1,0 +1,6 @@
+[
+    {
+        "type": "major",
+        "requirements": [ ["COMM 111", "COMM 114"], "CS 162", "CS 261", "CS 290", "CS 325", "CS 340", "CS 344", "CS 361", "CS 362", "CS 372", "CS 381", "CS 391", "CS 444", "CS 461", "CS 462", "CS 463", "ENGR 100", "ENGR 102", "ENGR 103", "MTH 231", "MTH 251", "MTH 252", "ST 314", "WR 121", ["WR 214", "WR 222"], "WR 327" ]
+    }
+]

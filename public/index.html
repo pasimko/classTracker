@@ -1,0 +1,38 @@
+<!-- TODO: -->
+    <!-- https://stackoverflow.com/a/60138849/5824449 -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Display JSON Data</title>
+        <script src="index.js" defer></script>
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+    <body>
+        <div class="majorForm">
+            <h1>select your major <h1>
+
+            <div id="dataDisplay"></div>
+
+            <select id="majorSelect">
+                <option disabled selected>select a major</option>
+            </select>
+
+            <div id="optionSelect"> </div>
+
+            <input id="goButton" disabled=true type="submit" value="go!" />
+
+            <div id="menuContainer">
+                <!-- The dynamically generated menu will appear here -->
+            </div>
+        </div>
+        <div id="visualize">
+            
+        </div>
+        welcome! select your major (and option, if applicable)<br>
+        press go, and this site will show you which classes you need to take<br>
+        you can edit the form or refresh the page at any time to reset your input<br>
+
+    </body>
+</html>

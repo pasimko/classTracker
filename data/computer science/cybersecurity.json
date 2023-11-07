@@ -1,0 +1,8 @@
+[
+    {
+        "type": "option",
+        "requirements": ["CS 321", "CS 370", "CS 373", "CS 427", "CS 478", "CS 271", "CS 352"],
+        "electives": ["CS 312", "CS 434", "CS 440", "CS 472", "CS 476", "CS 493", "MTH 341", "MTH 440", "MTH 451", "MTH 452", "MTH 453"],
+        "electiveCredits": 32
+    }
+]
