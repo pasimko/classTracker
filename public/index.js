@@ -34,15 +34,18 @@ let majors = {
 const optionSelectDiv = document.getElementById("optionSelect");
 const majorSelect = document.getElementById("majorSelect");
 const goButton = document.getElementById("goButton");
+const addClassInput = document.getElementById("addClassInput");
+const addClassForm = document.getElementById("addClassForm");
+const addClassButton = document.getElementById("addClassButton");
 const visualizeDiv = document.getElementById("visualize");
-
-let all_cells_toggled_on = false;
 
 // Ensure form is reset on refresh
 majorSelect.selectedIndex = 0;
 goButton.disabled = true;
 let selectedMajor = majorSelect.value;
 let selectedOption = null
+let list_of_all_classes = [];
+let all_cells_toggled_on = false;
 
 for (let major in majors) {
     const option = document.createElement('option');
@@ -82,6 +85,10 @@ majorSelect.addEventListener('change', () => {
     else
         goButton.disabled = false;
 });
+
+function elementsNotInArray(array1, array2) {
+  return array1.filter(element => !array2.includes(element)).length > 0;
+}
 
 async function requestData(major) {
     try {
@@ -123,6 +130,7 @@ goButton.addEventListener('click', async () => {
     const toggle_info = document.createElement('p');
     toggle_info.innerText = "! Click this button to toggle all cells into on/off state"
     visualizeDiv.appendChild(toggle_info);
+    addClassForm.hidden = false;
 })
 
 // Function to create an HTML table row for a list of items
@@ -132,13 +140,16 @@ function createTableRow(header, columns) {
     labelCell.innerText = header;
     label.appendChild(labelCell);
     for (const item of columns) {
-        const cell = document.createElement('td');
-        cell.onclick = function() {
-            this.className = this.className == "grayed" ? "normal" : "grayed";
+        if (list_of_all_classes.indexOf(item) == -1) {
+            list_of_all_classes.push(item);
+            const cell = document.createElement('td');
+            cell.onclick = function() {
+                this.className = this.className == "grayed" ? "normal" : "grayed";
+            }
+            cell.textContent = item;
+            cell.class = "normal";
+            label.appendChild(cell);
         }
-        cell.textContent = item;
-        cell.class = "normal";
-        label.appendChild(cell);
     }
     return label;
 }
@@ -146,18 +157,28 @@ function createTableRow(header, columns) {
 function createTable(data) {
     const table = document.createElement('table');
 
-    for (const group of data) {
-        for (const course of group) {
-            const row = createTableRow(course.type, course.requirements);
-            table.appendChild(row);
+    // type: major, option, prerequisite
+    for (const type of data) {
+        if (type) {
+            for (const course of type) {
+                if (course && (course.requirements.length) > 0 && elementsNotInArray(course.requirements, list_of_all_classes)) {
+                    if (course.type == 'prerequisites') {
+                        const row = createTableRow(`${course.type} (${course.course})`, course.requirements);
+                        table.appendChild(row);
+                    }
+                    else {
+                        const row = createTableRow(course.type, course.requirements);
+                        table.appendChild(row);
 
-            if (course.electives) {
-                const electivesRow = createTableRow(`${course.type} electives (${course.electiveCredits})`, course.electives);
-                table.appendChild(electivesRow);
+                        if (course.electives) {
+                            const electivesRow = createTableRow(`${course.type} electives (${course.electiveCredits})`, course.electives);
+                            table.appendChild(electivesRow);
+                        }
+                    }
+                }
             }
         }
     }
-
     return table;
 }
 
@@ -170,3 +191,37 @@ function toggleClass() {
     }
     all_cells_toggled_on = !all_cells_toggled_on;
 }
+
+async function requestCourseData(course) {
+    try {
+        const response = await fetch('/getCourseData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({course: course})
+        });
+
+        if (!response.ok) {
+            throw new Error('Request failed.');
+        }
+
+        let result = await response.json();
+        return result
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+}
+
+addClassButton.addEventListener('click', async () => {
+    classData = await requestCourseData(addClassInput.value);
+    if (!classData || classData == undefined) {
+        alert("We couldn't find that class");
+        return;
+    }
+    const table = document.querySelector('table');
+    // The structure of this object IS WRONG. WHY?!
+    newRow = createTableRow(`${classData.prereqs.course}`, classData.prereqs.requirements);
+    table.appendChild(newRow)
+    console.log(classData);
+})
